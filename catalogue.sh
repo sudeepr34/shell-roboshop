@@ -96,5 +96,5 @@ else
     echo -e "Catalogue already exists"
 fi
 
-systemctl restart catalogues &>>LOG_FILE
+systemctl restart catalogue
 VALIDATE $? "Restarting Catalogues"
