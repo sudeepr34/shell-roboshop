@@ -38,8 +38,6 @@ VALIDATE(){
     fi
 }
 
-cp -p $SCRIPT_PATH/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo
-
 dnf module disable nodejs -y &>>LOG_FILE
 VALIDATE $? "Disabling nodejs"
 dnf module enable nodejs:20 -y &>>LOG_FILE
