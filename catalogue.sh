@@ -9,6 +9,7 @@ LOGS_FOLDER="/var/log/shell-script"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 MONGODB_HOST=mongodb.daws86s.fun
+SCRIPT_PATH=/home/ec2-user/shell-roboshop/
 
 
 mkdir -p $LOGS_FOLDER
@@ -41,11 +42,17 @@ VALIDATE $? "Enabling nodejs"
 dnf install nodejs -y &>>LOG_FILE
 VALIDATE $? "Installing nodejs"
 
-useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
-VALIDATE $? "Creating System User"
+id roboshop
+if [ $? -ne 0 ]; then
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
+    VALIDATE $? "Creating System User"
+else
+    echo "user already exists...$Y SKIPPING $N"
+fi
 
-mkdir /app 
+mkdir -p /app 
 VALIDATE $? "Creating app Directory"
+
 
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>LOG_FILE
 VALIDATE $? "Downloading Catalogue Application"
@@ -59,7 +66,7 @@ cd /app
 npm install &>>LOG_FILE
 VALIDATE $? "Instaling dependencies"
 
-cp /home/ec2-user/shell-roboshop/catalogue.service /etc/systemd/system/catalogue.service
+cp $SCRIPT_PATH/catalogue.service /etc/systemd/system/catalogue.service
 VALIDATE $? "Copying Systemctl services"
 
 systemctl daemon-reload &>>LOG_FILE
@@ -70,7 +77,7 @@ VALIDATE $? "Enabling Catalogue"
 systemctl start catalogue &>>LOG_FILE
 VALIDATE $? "Starting Catalogue"
 
-cp /home/ec2-user/shell-roboshop/mongo.repo /etc/yum.repos.d/mongo.repo
+cp $SCRIPT_PATH/mongo.repo /etc/yum.repos.d/mongo.repo
 VALIDATE $? "Adding Mongo repo"
 
 dnf install mongodb-mongosh -y &>>LOG_FILE
