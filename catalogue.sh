@@ -8,7 +8,7 @@ N="\e[0m"
 LOGS_FOLDER="/var/log/shell-script"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-MONGODB_HOST=mongodb.daws86s.fun
+MONGODB_HOST=172.31.22.68
 SCRIPT_PATH=/home/ec2-user/shell-roboshop/
 
 
@@ -87,9 +87,10 @@ VALIDATE $? "Adding Mongo repo"
 dnf install mongodb-mongosh -y &>>LOG_FILE
 VALIDATE $? "Istalling MongoDB CLient"
 
-INDEX=$(mongosh mongodb.daws86s.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
-if [ $INDEX -ne 0 ]; then
-    mongosh --host $MONGODB_HOST </app/db/master-data.js
+INDEX=$(mongosh 172.31.22.68 --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
+
+if [ $INDEX -le 0 ]; then
+    mongosh --host 172.31.22.68 </app/db/master-data.js
     VALIDATE $? "Loading Catalogue Products"
 else
     echo -e "Catalogue already exists"
