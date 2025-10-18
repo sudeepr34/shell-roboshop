@@ -72,16 +72,16 @@ cd /app
 npm install &>>LOG_FILE
 VALIDATE $? "install npm"
 
-cp -p $SCRIPT_PATH/user.service /etc/systemd/system/user.service
+cp -p $SCRIPT_PATH/cart.service /etc/systemd/system/cart.service
 
 systemctl daemon-reload &>>LOG_FILE
 VALIDATE $? "Reloading Daemon"
 
 systemctl enable cart &>>LOG_FILE
-VALIDATE $? "Enabling User"
+VALIDATE $? "Enabling cart"
 
 systemctl start cart &>>LOG_FILE
-VALIDATE $? "Starting User"
+VALIDATE $? "Starting cart"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$(( $END_TIME - $START_TIME))
