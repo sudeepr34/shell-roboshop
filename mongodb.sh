@@ -23,10 +23,10 @@ fi
 
 VALIDATE(){
     if [ $1 -ne 0 ]; then
-        echo " $2 Failure"
+        echo -e "$2 Failure"
         exit 1
     else    
-        echo " $2 Success"
+        echo -e "$2 Success"
     fi
 }
 
@@ -36,8 +36,8 @@ VALIDATE $? "Adding Mongo repo"
 dnf install mongodb-org -y &>>LOG_FILE
 VALIDATE $? "Installing MongoDB"
 
-systemctl enable mongodb
+systemctl enable mongodb &>>LOG_FILE
 VALIDATE $? "Enabled MongoDB"
 
-systemctl start mongodb
+systemctl start mongodb &>>LOG_FILE
 VALIDATE $? "Started MongoDB"
