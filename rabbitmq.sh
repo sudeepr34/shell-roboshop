@@ -12,7 +12,7 @@ MONGODB_HOST=172.31.22.68
 REDIS_HOST=172.31.23.81
 MYSQL_HOST=172.31.26.67
 RABBITMQ_HOST=172.31.28.64
-SCRIPT_PATH=/home/ec2-user/shell-roboshop/
+SCRIPT_PATH=$(PWD)
 START_TIME=$(date +%s)
 
 
@@ -36,16 +36,18 @@ VALIDATE(){
     fi
 }
 
+cp -p $SCRIPT_PATH/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo
 
-dnf install mysql-server -y &>>LOG_FILE
+dnf install rabbitmq-server -y &>>LOG_FILE
 VALIDATE $? "INstalling MySQL"
-systemctl enable mysqld &>>LOG_FILE
+systemctl enable rabbitmq-server &>>LOG_FILE
 VALIDATE $? "Enabling MySQL"
-systemctl start mysqld &>>LOG_FILE
+systemctl start rabbitmq-server &>>LOG_FILE
 VALIDATE $? "Starting MySQL"
 
-mysql_secure_installation --set-root-pass RoboShop@1 &>>LOG_FILE
-VALIDATE $? "Password has been set"
+rabbitmqctl add_user roboshop roboshop123
+rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
+VALIDATE $? "Setting Permissions"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$(( $END_TIME - $START_TIME))
