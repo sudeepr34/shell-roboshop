@@ -45,33 +45,41 @@ VALIDATE $? "Enabling nodejs"
 dnf install nodejs -y &>>LOG_FILE
 VALIDATE $? "Installing nodejs"
 
-useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
-VALIDATE $? "created user roboshop"
+id roboshop
+if [ $? -ne 0 ]; then
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
+    VALIDATE $? "Creating System User"
+else
+    echo "user already exists... $Y SKIPPING $N "
+fi
+
 mkdir -p /app 
 VALIDATE $? "created /app directory"
+
+cd /app
 
 rm -rf /app/*
 VALIDATE $? "Removing Existing code"
 
-curl -L -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip 
+curl -L -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip &>>LOG_FILE
 VALIDATE $? "downloaded binaries"
 cd /app 
-unzip /tmp/user.zip
+unzip /tmp/user.zip &>>LOG_FILE
 VALIDATE $? "unzipping the contents"
 
 cd /app 
-npm install 
+npm install &>>LOG_FILE
 VALIDATE $? "install npm"
 
 cp -p $SCRIPT_PATH/user.service /etc/systemd/system/user.service
 
-systemctl daemon-reload
+systemctl daemon-reload &>>LOG_FILE
 VALIDATE $? "Reloading Daemon"
 
-systemctl enable user 
+systemctl enable user &>>LOG_FILE
 VALIDATE $? "Enabling User"
 
-systemctl start user
+systemctl start user &>>LOG_FILE
 VALIDATE $? "Starting User"
 
 END_TIME=$(date +%s)
