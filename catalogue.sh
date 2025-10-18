@@ -87,8 +87,8 @@ VALIDATE $? "Adding Mongo repo"
 dnf install mongodb-mongosh -y &>>LOG_FILE
 VALIDATE $? "Istalling MongoDB CLient"
 
-INDEX=$(mongosh mongodb.daws86s.fun --quiet --eval "db.getMongo().getDBNames().indexOf('admin)")
-if [ $INDEX -le 0 ]; then
+INDEX=$(mongosh mongodb.daws86s.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
+if [ $INDEX -ne 0 ]; then
     mongosh --host $MONGODB_HOST </app/db/master-data.js
     VALIDATE $? "Loading Catalogue Products"
 else
