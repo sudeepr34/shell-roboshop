@@ -47,7 +47,7 @@ VALIDATE $? "Creating System User"
 mkdir /app 
 VALIDATE $? "Creating app Directory"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip 
+curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>LOG_FILE
 VALIDATE $? "Downloading Catalogue Application"
 
 cd /app
@@ -59,7 +59,7 @@ cd /app
 npm install &>>LOG_FILE
 VALIDATE $? "Instaling dependencies"
 
-cp catalogue.service /etc/systemd/system/catalogue.service
+cp /home/ec2-user/shell-roboshop/catalogue.service /etc/systemd/system/catalogue.service
 VALIDATE $? "Copying Systemctl services"
 
 systemctl daemon-reload &>>LOG_FILE
