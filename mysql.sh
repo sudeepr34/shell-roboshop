@@ -36,22 +36,15 @@ VALIDATE(){
 }
 
 
-dnf module disable redis -y &>>LOG_FILE
-VALIDATE $? "Disabling redis"
-dnf module enable redis:7 -y &>>LOG_FILE
-VALIDATE $? "Enabling redis"
+dnf install mysql-server -y
+VALIDATE $? "INstalling MySQL"
+systemctl enable mysqld
+VALIDATE $? "Enabling MySQL"
+systemctl start mysqld  
+VALIDATE $? "Starting MySQL"
 
-dnf install redis -y &>>LOG_FILE
-VALIDATE $? "Installing redis"
-
-
-sed -i -e 's/127.0.0.1/0.0.0.0/g' -e '/protected-mode/ c protected-mode no' /etc/redis/redis.conf # -e is used to make multiple changes
-VALIDATE $? "changing redis conf"
-
-systemctl enable redis &>>LOG_FILE
-VALIDATE $? "Enabling redis"
-systemctl start redis &>>LOG_FILE
-VALIDATE $? "Starting redis"
+mysql_secure_installation --set-root-pass RoboShop@1
+VALIDATE $? "Password has been set"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$(( $END_TIME - $START_TIME))
