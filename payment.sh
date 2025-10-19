@@ -23,6 +23,15 @@ START_TIME=$(date +%s)
 mkdir -p $LOGS_FOLDER
 echo "script started execution at: $(date)"
 
+VALIDATE(){
+    if [ $1 -ne 0 ]; then
+        echo -e "$2 Failure"
+        exit 1
+    else    
+        echo -e "$2 Success"
+    fi
+}
+
 USERID=$(id -u)
 
 if [ $USERID -ne 0 ]; then
