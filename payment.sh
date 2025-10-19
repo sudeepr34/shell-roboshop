@@ -31,6 +31,7 @@ if [ $USERID -ne 0 ]; then
 fi
 
 dnf install python3 gcc python3-devel -y &>> LOG_FILE
+VALIDATE $? "Instaling Python"
 
 id roboshop &>>LOG_FILE
 if [ $? -ne 0 ]; then
@@ -40,7 +41,7 @@ else
     echo "user already exists... $Y SKIPPING $N "
 fi
 
-mkdir -p /app &>> LOG_FILE
+mkdir -p /app
 VALIDATE $? "Creating app Directory"
 
 curl -L -o /tmp/payment.zip https://roboshop-artifacts.s3.amazonaws.com/payment-v3.zip &>> LOG_FILE
