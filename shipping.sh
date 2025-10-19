@@ -82,15 +82,14 @@ VALIDATE $? "Starting shipping"
 dnf install mysql -y &>>LOG_FILE
 VALIDATE $? "Installing mysql"
 
-mysql -h $MYSQL_HOST -uroot -pRoboShop@1 'use cities'
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql &>>LOG_FILE
+VALIDATE $? "Creating Schema"
 
-if [ $? -ne 0 ]; then
-    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql &>>LOG_FILE
-    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql &>>LOG_FILE
-    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql &>>LOG_FILE
-else
-    echo -e "Shipping Data is already loaded... Skipping"
-fi
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql &>>LOG_FILE
+VALIDATE $? "Installing app-user"
+
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql &>>LOG_FILE
+VALIDATE $? "Installing master data"
 
 systemctl restart shipping &>>LOG_FILE
 VALIDATE $? "Restarting shipping"
