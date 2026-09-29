@@ -1,0 +1,6 @@
+config.env
+*.pem
+*.key
+.idea/
+.vscode/
+*.log

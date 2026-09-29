@@ -1,55 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/common.sh"
+require_root
 
-R="\e[31m"
-G="\e[32m"
-y="\e[33m"
-N="\e[0m"
+dnf install mysql-server -y >>"$LOG_FILE" 2>&1
+VALIDATE $? "Installing MySQL"
+systemctl enable mysqld >>"$LOG_FILE" 2>&1
+VALIDATE $? "Enabling mysqld"
+systemctl start mysqld >>"$LOG_FILE" 2>&1
+VALIDATE $? "Starting mysqld"
 
-LOGS_FOLDER="/var/log/shell-script"
-SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
-LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-MONGODB_HOST=172.31.22.68
-REDIS_HOST=172.31.23.81
-MYSQL_HOST=172.31.26.67
-RABBITMQ_HOST=172.31.28.64
-USER_HOST=172.31.21.18
-CART_HOST=172.31.23.203
-CATALOGUE_HOST=172.31.27.108
-SCRIPT_PATH=/home/ec2-user/shell-roboshop/
-START_TIME=$(date +%s)
-
-
-mkdir -p $LOGS_FOLDER
-echo "script started execution at: $(date)"
-
-USERID=$(id -u)
-
-if [ $USERID -ne 0 ]; then
-    echo "ERROR: Please run this script with root access"
-    exit 1 # failure is other than 0
-fi
-
-
-VALIDATE(){
-    if [ $1 -ne 0 ]; then
-        echo -e "$2 Failure"
-        exit 1
-    else    
-        echo -e "$2 Success"
-    fi
-}
-
-
-dnf install mysql-server -y &>>LOG_FILE
-VALIDATE $? "INstalling MySQL"
-systemctl enable mysqld &>>LOG_FILE
-VALIDATE $? "Enabling MySQL"
-systemctl start mysqld &>>LOG_FILE
-VALIDATE $? "Starting MySQL"
-
-mysql_secure_installation --set-root-pass RoboShop@1 &>>LOG_FILE
-VALIDATE $? "Password has been set"
-
-END_TIME=$(date +%s)
-TOTAL_TIME=$(( $END_TIME - $START_TIME))
-echo -e "Script executed in: $Y $TOTAL_TIME Seconds $N"
+mysql_secure_installation --set-root-pass "${MYSQL_ROOT_PASSWORD}" >>"$LOG_FILE" 2>&1
+VALIDATE $? "Setting MySQL root password"

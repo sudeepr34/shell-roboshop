@@ -1,14 +1,14 @@
 [Unit]
-Description = Cart Service
+Description=Cart Service
+After=network.target
+
 [Service]
 User=roboshop
-// highlight-start
-Environment=REDIS_HOST=172.31.23.81
-Environment=CATALOGUE_HOST=172.31.27.108
-Environment=CATALOGUE_PORT=8080
-// highlight-end
+EnvironmentFile=-/etc/roboshop/cart.env
 ExecStart=/bin/node /app/server.js
 SyslogIdentifier=cart
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
